@@ -126,7 +126,7 @@ void WindowedMode::InitD3dDevice()
 
 void WindowedMode::InitConfig()
 {
-	auto attr = GetFileAttributes(config.GetIniPath().c_str());
+	auto attr = GetFileAttributes(config.GetIniPath().string().c_str());
 	
 	if (attr == INVALID_FILE_ATTRIBUTES) // does not exists
 		SaveConfig();

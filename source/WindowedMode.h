@@ -49,7 +49,7 @@ public:
 	void SaveConfig();
 
 	// game window
-	struct AspectRatioInfo { char* name; float ratio; };
+	struct AspectRatioInfo { const char* name; float ratio; };
 	static const AspectRatioInfo AspectRatios[];
 	static int FindAspectRatio(POINT resolution, float treshold = 0.007f);
 

@@ -408,7 +408,7 @@ struct CMenuManagerSA
 	// incomplete
 };
 
-static DWORD Crc32(const BYTE* data, size_t size)
+static inline DWORD Crc32(const BYTE* data, size_t size)
 {
 	DWORD crc = ~0;
 	for (size_t i = 0; i < size; i++)
@@ -423,7 +423,7 @@ static DWORD Crc32(const BYTE* data, size_t size)
 	return ~crc;
 }
 
-static RECT GetMonitorRect(POINT pos)
+static inline RECT GetMonitorRect(POINT pos)
 {
 	auto monitor = MonitorFromPoint(pos, MONITOR_DEFAULTTONEAREST);
 	MONITORINFO info = { sizeof(MONITORINFO) };
@@ -437,12 +437,12 @@ static RECT GetMonitorRect(POINT pos)
 	return info.rcMonitor;
 }
 
-static bool HasFocus(HWND wnd)
+static inline bool HasFocus(HWND wnd)
 {
 	return GetForegroundWindow() == wnd;
 }
 
-static bool IsCursorInClientRect(HWND wnd)
+static inline bool IsCursorInClientRect(HWND wnd)
 {
 	POINT pos;
 	GetCursorPos(&pos);
@@ -455,12 +455,12 @@ static bool IsCursorInClientRect(HWND wnd)
 	return PtInRect(&rect, pos);
 }
 
-static bool IsKeyDown(int keyCode)
+static inline bool IsKeyDown(int keyCode)
 {
 	return GetAsyncKeyState(keyCode) & 0x8000;
 }
 
-static std::string StringPrintf(const char* format, ...)
+static inline std::string StringPrintf(const char* format, ...)
 {
 	va_list args;
 	va_start(args, format);
@@ -476,23 +476,7 @@ static std::string StringPrintf(const char* format, ...)
 	return result;
 }
 
-template <class ... Args>
-static void ShowError(const char* format, Args ... args)
-{
-	auto msg = StringPrintf(format, args...);
-
-	auto wnd = GetActiveWindow();
-	if (wnd)
-	{
-		PostMessage(wnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
-		ShowWindow(wnd, SW_MINIMIZE);
-	}
-
-	SetCursorVisible(true);
-	MessageBoxA(wnd, msg.c_str(), rsc_ProductName, MB_SYSTEMMODAL | MB_ICONERROR);
-}
-
-static void SetCursorVisible(bool state)
+static inline void SetCursorVisible(bool state)
 {
 	// ShowCursor returns state. Use with current visibility to prevent flickering
 	CURSORINFO info = { sizeof(CURSORINFO) };
@@ -513,7 +497,23 @@ static void SetCursorVisible(bool state)
 	}
 }
 
-static void VerifyMemory(const char* name, DWORD address, size_t size, DWORD expectedHash)
+template <class ... Args>
+static void ShowError(const char* format, Args ... args)
+{
+	auto msg = StringPrintf(format, args...);
+
+	auto wnd = GetActiveWindow();
+	if (wnd)
+	{
+		PostMessage(wnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
+		ShowWindow(wnd, SW_MINIMIZE);
+	}
+
+	SetCursorVisible(true);
+	MessageBoxA(wnd, msg.c_str(), rsc_ProductName, MB_SYSTEMMODAL | MB_ICONERROR);
+}
+
+static inline void VerifyMemory(const char* name, DWORD address, size_t size, DWORD expectedHash)
 {
 	auto buffer = std::vector<BYTE>(size);
 	injector::ReadMemoryRaw(address, buffer.data(), size, true);
