@@ -1,4 +1,4 @@
-7za a -tzip ".\III.VC.SA.WindowedMode.zip" ".\III.VC.SA.WindowedMode.asi" ".\III.VC.SA.CoordsManager.exe"
+7za a -tzip ".\III.VC.SA.WindowedMode.zip" ".\III.VC.SA.WindowedMode.asi" "..\README.md" "..\CHANGELOG.md"
 EXIT
 
 7-Zip Extra

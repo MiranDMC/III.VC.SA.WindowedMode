@@ -1,8 +1,21 @@
+
+function setupDebugger(gameAbbr, gameExeName)
+    postbuildcommands { "\
+if defined GTA_" .. gameAbbr .. "_DIR ( \r\n\
+taskkill /IM " .. gameExeName .. " /F /FI \"STATUS eq RUNNING\" \r\n\
+xcopy /Y \"$(TargetPath)\" \"$(GTA_" .. gameAbbr .. "_DIR)\\scripts\" \r\n\
+)" }
+
+    debugcommand ("$(GTA_" .. gameAbbr .. "_DIR)\\" .. gameExeName)
+    debugdir ("$(GTA_" .. gameAbbr .. "_DIR)")
+end
+
 workspace "III.VC.SA.WindowedMode"
-   configurations { "Release", "Debug" }
+   configurations { "Release", "Gta3", "GtaVC", "GtaSA" }
    platforms { "Win32" }
    architecture "x32"
-   characterset ("UNICODE")
+   characterset ("MBCS")
+   staticruntime "on"
    location "build"
    objdir ("build/obj")
    buildlog ("build/log/%{prj.name}.log")
@@ -21,57 +34,31 @@ project "III.VC.SA.WindowedMode"
    defines { "rsc_FileDescription=\"https://github.com/ThirteenAG\"" }
    defines { "rsc_UpdateUrl=\"https://github.com/ThirteenAG/III.VC.SA.WindowedMode\"" }
    
-   files { "source/cpp/*.h" }
-   files { "source/cpp/*.cpp", "source/*.c" }
-   files { "source/cpp/*.rc" }
+   files { "source/*.h" }
+   files { "source/*.cpp", "source/*.c" }
+   files { "source/*.rc" }
 
-   includedirs { "source/cpp" }
-   includedirs { "source/cpp/d3d8" }
+   includedirs { "source" }
+   includedirs { "source/d3d8" }
    includedirs { "external/injector/include" }
    includedirs { "external/IniReader" }
 
-   filter "configurations:Debug"
+   filter "configurations:Gta3"
       defines { "DEBUG" }
-      symbols "On"
-
-   filter "configurations:Release"
-      defines { "NDEBUG" }
-      optimize "On"
-	  flags { "StaticRuntime" }
-	  targetdir "data"
-	  
-	  
-project "III.VC.SA.CoordsManager"
-   kind "WindowedApp"
-   language "C#"
-   location "source/cs"
-   targetdir "data/%{cfg.buildcfg}"
-   targetextension ".exe"
-   icon "source/cs/radar_player_target.ico"
+      symbols "on"
+      setupDebugger("III", "gta3.exe")
       
-   files { "source/cs/*.*" }
-   files { "source/cs/Properties/*.*" }
-   files { "source/cs/Resources/*.*" }
-
-   links { "System",
-		   "System.Core",
-		   "System.Xml.Linq",
-		   "System.Data.DataSetExtensions",
-		   "Microsoft.CSharp",
-		   "System.Data",
-		   "System.Deployment",
-		   "System.Drawing",
-		   "System.Net.Http",
-		   "System.Windows.Forms",
-		   "System.Xml"
-	}
-
-   filter "configurations:Debug"
+   filter "configurations:GtaVC"
       defines { "DEBUG" }
-      symbols "On"
+      symbols "on"
+      setupDebugger("VC", "gta-vc.exe")
+      
+   filter "configurations:GtaSA"
+      defines { "DEBUG" }
+      symbols "on"
+      setupDebugger("SA", "gta_sa.exe")
 
    filter "configurations:Release"
       defines { "NDEBUG" }
-      optimize "On"
-	  flags { "StaticRuntime" }
-	  targetdir "data"
+      optimize "on"
+      targetdir "data"
