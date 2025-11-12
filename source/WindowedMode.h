@@ -75,6 +75,7 @@ public:
 	POINT windowSizeWindowed = Resolution_Default;
 
 	void WindowCalculateGeometry(bool center = false, bool resizeWindow = false);
+	void WindowResize(POINT resolution);
 	void WindowModeCycle();
 	DWORD WindowStyle() const;
 	DWORD WindowStyleEx() const;

@@ -26,6 +26,9 @@ void WindowedMode::InitGtaVC()
 	VerifyMemory("CreateWindow", 0x5FFC75, 6, 0xFE9E2136);
 	VerifyMemory("InitPresentationParams", 0x65C0B4, 6, 0x2C46D383);
 	VerifyMemory("InitD3dDevice", 0x65C4E2, 6, 0xAE882A19);
+	VerifyMemory("Options>Resolution coloring", 0x49EDBC, 2, 0x5B93799F);
+	VerifyMemory("Options>Resolution disabling", 0x499F57, 2, 0xC3868E8B);
+	VerifyMemory("Options>Resolution hook", 0x4999D0, 5, 0xF4765372);
 #endif
 
 	// patch call to CreateWindowExA
@@ -53,4 +56,15 @@ void WindowedMode::InitGtaVC()
 			inst->InitD3dDevice();
 		}
 	}; injector::MakeInline<Path_InitD3dDevice>(0x65C4E2, 0x65C4E8);
+
+	injector::WriteMemory(0x49EDBC, WORD(0xE990), true); // don't gray out resoluton in options menu after game started
+	injector::MakeNOP(0x499F57, 2); // don't disable resoluton changes in options menu after game started
+	struct Patch_ChangeResolution // user selected new resolition in option menu
+	{
+		void operator()(injector::reg_pack& regs)
+		{
+			auto mode = *inst->rwVideoModes + regs.eax;
+			inst->WindowResize({ (LONG)mode->width, (LONG)mode->height });
+		}
+	}; injector::MakeInline<Patch_ChangeResolution>(0x4999D0);
 }

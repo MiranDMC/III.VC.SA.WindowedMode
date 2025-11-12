@@ -346,6 +346,16 @@ void WindowedMode::WindowCalculateGeometry(bool center, bool resizeWindow)
 	windowUpdating = false;
 }
 
+void WindowedMode::WindowResize(POINT resolution)
+{
+	if (windowMode == WindowMode::Fullscreen)
+		windowMode = WindowMode::Windowed;
+
+	windowSizeWindowed = resolution;
+	WindowCalculateGeometry(false, true); // and resize the window
+	SaveConfig();
+}
+
 void WindowedMode::WindowModeCycle()
 {
 	if (IsIconic(window)) return; // minimized
@@ -717,12 +727,7 @@ HRESULT WindowedMode::D3dResetHook(IDirect3DDevice8* self, D3DPRESENT_PARAMETERS
 	}
 	else // resolution changed
 	{
-		if (inst->windowMode == WindowMode::Fullscreen)
-			inst->windowMode = WindowMode::Windowed;
-
-		inst->windowSizeWindowed = { (LONG)parameters->BackBufferWidth, (LONG)parameters->BackBufferHeight };
-		inst->WindowCalculateGeometry(false, true); // and resize the window
-		inst->SaveConfig();
+		inst->WindowResize({ (LONG)parameters->BackBufferWidth, (LONG)parameters->BackBufferHeight });
 	}
 
 	auto result = inst->d3dResetOri(self, inst->d3dPresentParams8);
