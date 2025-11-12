@@ -176,7 +176,7 @@ int WindowedMode::FindAspectRatio(POINT resolution, float treshold)
 	// find best match in
 	int idx = -1;
 	float dist = 9999.0f;
-	for(size_t i = 0; i < _countof(AspectRatios); i++)
+	for (size_t i = 0; i < _countof(AspectRatios); i++)
 	{
 		auto diff = fabs(AspectRatios[i].ratio - ratio);
 		if (diff < dist)
@@ -348,14 +348,14 @@ void WindowedMode::WindowCalculateGeometry(bool center, bool resizeWindow)
 
 void WindowedMode::WindowModeCycle()
 {
-	if (IsIconic(inst->window)) return; // minimized
+	if (IsIconic(window)) return; // minimized
 
-	if (!HasFocus(inst->window)) return; // window inactive
+	if (!HasFocus(window)) return; // window inactive
 
 	if (IsZoomed(window)) // maximized
 	{
 		windowMode = WindowedMode::Min;
-		ShowWindow(inst->window, SW_RESTORE);
+		ShowWindow(window, SW_RESTORE);
 	}
 	else
 	{
@@ -595,7 +595,7 @@ LRESULT APIENTRY WindowedMode::WindowProc(HWND wnd, UINT msg, WPARAM wParam, LPA
 			POINT pos = { info->x + padding.left, info->y + padding.top };
 			if ((info->flags & SWP_NOMOVE) == 0)
 			{
-				if(pos.x != inst->windowPos.x || pos.y != inst->windowPos.y)
+				if (pos.x != inst->windowPos.x || pos.y != inst->windowPos.y)
 				{
 					inst->windowPos = pos;
 					updated = true;
@@ -604,7 +604,7 @@ LRESULT APIENTRY WindowedMode::WindowProc(HWND wnd, UINT msg, WPARAM wParam, LPA
 
 			if ((info->flags & SWP_NOSIZE) == 0)
 			{
-				if(info->cx != inst->windowSize.x || info->cy != inst->windowSize.y)
+				if (info->cx != inst->windowSize.x || info->cy != inst->windowSize.y)
 				{
 					inst->windowSize = { info->cx, info->cy };
 					updated = true;
@@ -693,7 +693,7 @@ HRESULT WindowedMode::D3dPresentHook(IDirect3DDevice8* self, const RECT* srcRect
 		static DWORD prevTime = 0;
 		DWORD currTime = timeGetTime();
 	
-		while(true)
+		while (true)
 		{
 			DWORD delta = currTime - prevTime;
 
