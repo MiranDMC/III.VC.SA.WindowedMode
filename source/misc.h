@@ -476,24 +476,15 @@ static inline std::string StringPrintf(const char* format, ...)
 	return result;
 }
 
-static inline void SetCursorVisible(bool state)
+static inline void SetCursorVisible(bool show)
 {
-	// ShowCursor returns state. Use with current visibility to prevent flickering
-	CURSORINFO info = { sizeof(CURSORINFO) };
-	if (!GetCursorInfo(&info)) return;
-	bool currState = ShowCursor(info.flags & CURSOR_SHOWING) >= 0; 
-
-	int loopCounter = 128; // expect unexpected - dead loop prevention
-	while (currState != state)
+	int targetState = show ? 0 : -1;
+	int currState = ShowCursor(show);
+	int tries = 128; // infinite loop prevention
+	while (currState != targetState && tries)
 	{
-		currState = ShowCursor(state) >= 0;
-
-		// anti-freeze
-		loopCounter--;
-		if (loopCounter <= 0)
-		{
-			break;
-		}
+		currState = ShowCursor(currState < targetState);
+		tries--;
 	}
 }
 
