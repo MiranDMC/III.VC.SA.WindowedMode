@@ -158,7 +158,7 @@ bool WindowedMode::LoadConfig()
 void WindowedMode::SaveConfig()
 {
 	config.WriteString("window", "mode",		StringPrintf("%d\t\t\t; 1: window, 2: window borderless, 3: fullscreen", windowMode));
-	config.WriteString("window", "maximized",	StringPrintf("%d", IsZoomed(inst->window)));
+	config.WriteString("window", "maximized",	StringPrintf("%d", IsZoomed(window)));
 	config.WriteString("window", "positionX",	StringPrintf("%d\t; -1: centered", windowPosWindowed.x));
 	config.WriteString("window", "positionY",	StringPrintf("%d\t; -1: centered", windowPosWindowed.y));
 	config.WriteString("window", "resolutionX",	StringPrintf("%d", windowSizeWindowed.x));
@@ -263,10 +263,10 @@ void WindowedMode::WindowCalculateGeometry(bool center, bool resizeWindow)
 	{
 		SetWindowLong(window, GWL_STYLE, WindowStyle());
 		SetWindowLong(window, GWL_EXSTYLE, WindowStyleEx());
-		SetWindowPos(inst->window, 0, 0, 0, 0, 0, SWP_NOOWNERZORDER | SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE | SWP_NOSENDCHANGING | SWP_FRAMECHANGED | SWP_SHOWWINDOW); // update the frame
+		SetWindowPos(window, 0, 0, 0, 0, 0, SWP_NOOWNERZORDER | SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE | SWP_NOSENDCHANGING | SWP_FRAMECHANGED | SWP_SHOWWINDOW); // update the frame
 		auto padding = GetFrameSize(true);
 
-		SetWindowPos(inst->window, 0,
+		SetWindowPos(window, 0,
 			windowPos.x - padding.left,
 			windowPos.y - padding.top,
 			windowSize.x,
@@ -843,8 +843,8 @@ void WindowedMode::UpdatePostEffect()
 			if (cam)
 			{
 				oriSize = { cam->frameBuffer->nWidth, cam->frameBuffer->nHeight }; // store
-				cam->frameBuffer->nWidth = inst->windowSizeClient.x;
-				cam->frameBuffer->nHeight = inst->windowSizeClient.y;
+				cam->frameBuffer->nWidth = windowSizeClient.x;
+				cam->frameBuffer->nHeight = windowSizeClient.y;
 			}
 
 			injector::cstd<void()>::call(0x7043D0); // CPostEffects::SetupBackBufferVertex()
@@ -869,7 +869,7 @@ void WindowedMode::UpdateWidescreenFix()
 
 	if (!initialized)
 	{
-		switch(inst->gameTitle)
+		switch(gameTitle)
 		{
 			case GameTitle::GTA_3:
 				widescreenFix = GetModuleHandle("GTA3.WidescreenFix.asi");
